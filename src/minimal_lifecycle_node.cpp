@@ -21,17 +21,17 @@ public:
   // on_configure, on_activate, on_deactivate, on_cleanup, on_shutdown go here
     CallbackReturn on_configure(const rclcpp_lifecycle::State &) override{
         publisher_ = this->create_lifecycle_publisher<std_msgs::msg::String>("/status", 10);
-
-        timer_ = this->create_wall_timer(1s, std::bind(&MinimalLifecycleNode::timer_callback, this));
         RCLCPP_INFO(get_logger(), "on_configure() done");
         return CallbackReturn::SUCCESS;
     }
     CallbackReturn on_activate(const rclcpp_lifecycle::State &) override{
         publisher_->on_activate();
+        timer_ = this->create_wall_timer(1s, std::bind(&MinimalLifecycleNode::timer_callback, this));
         RCLCPP_INFO(get_logger(), "on_activate() done");
         return CallbackReturn::SUCCESS;
     }
     CallbackReturn on_deactivate(const rclcpp_lifecycle::State &) override{
+        timer_.reset();
         publisher_->on_deactivate();
         RCLCPP_INFO(get_logger(), "on_deactivate() done");
         return CallbackReturn::SUCCESS;
@@ -43,6 +43,8 @@ public:
         return CallbackReturn::SUCCESS;
     }
     CallbackReturn on_shutdown(const rclcpp_lifecycle::State &) override{
+        timer_.reset();
+        publisher_.reset();
         RCLCPP_INFO(get_logger(), "on_shutdown() done");
         return CallbackReturn::SUCCESS;
     }
