@@ -16,7 +16,7 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 add_executable(minimal_lifecycle_node src/minimal_lifecycle_node.cpp)
-target_include_directories(minimal_lifecycle_node PUBLIC_HEADER
+target_include_directories(minimal_lifecycle_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
