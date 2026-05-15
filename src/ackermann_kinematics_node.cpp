@@ -47,7 +47,6 @@ public:
     // 5. create TF broadcaster
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
-    last_time_ = now();
     RCLCPP_INFO(get_logger(), "on_configure() done");
     return CallbackReturn::SUCCESS;
   }
@@ -57,6 +56,7 @@ public:
     wheel_pub_->on_activate();
     odom_pub_->on_activate();
     path_pub_->on_activate();
+    last_time_ = now();  // reset tại đây để dt của callback đầu tiên = 0
     RCLCPP_INFO(get_logger(), "on_activate() done");
     return CallbackReturn::SUCCESS;
   }
