@@ -21,6 +21,7 @@ btvn04_tuannghia_ivs/
 ├── scripts/
 │   ├── compare_kinematics.py               # So sánh Ackermann vs Diff Drive
 │   ├── odometry_noise.py                   # Mô phỏng nhiễu Gaussian trên odometry
+│   ├── run_s_curve.sh                      # Demo hình chữ S lớn trên ROS2 (Lab 4)
 │   ├── kinematics_comparison.csv / .png    # Kết quả đã chạy sẵn
 │   └── odometry_noise.png
 └── test/
@@ -118,6 +119,8 @@ ros2 service call /system/stop  std_srvs/srv/Trigger
 
 ## 5. Ví dụ điều khiển
 
+### 5.1. Chạy thẳng cơ bản
+
 Mở 3 terminal:
 
 ```bash
@@ -141,6 +144,29 @@ ros2 topic echo /wheel_commands
 ros2 run rviz2 rviz2     # Add Path + TF
 ```
 
+### 5.2. Demo hình chữ S (Lab 4)
+
+Script [run_s_curve.sh](scripts/run_s_curve.sh) mô phỏng quỹ đạo S-curve lớn, đối xứng, robot kết thúc cùng hướng ban đầu.
+
+**Pattern:** đi thẳng → rẽ trái 90° → rẽ phải 180° → rẽ trái 90° → đi thẳng
+
+Tham số: `phi = 0.6 rad (34.4°)`, `v = 1.0 m/s`, `R ≈ 3.65 m`, tổng thời gian ≈ 28s.
+
+```bash
+# T1 — khởi động node
+ros2 run ackermann_lifecycle_pkg ackermann_kinematics_node
+
+# T2 — kích hoạt
+ros2 lifecycle set /ackermann_kinematics_node configure
+ros2 lifecycle set /ackermann_kinematics_node activate
+
+# T3 — chạy S-curve
+bash ~/ros2_ws/src/ackermann_lifecycle_pkg/scripts/run_s_curve.sh
+
+# T4 — quan sát trong RViz2
+ros2 run rviz2 rviz2   # Fixed Frame: odom | Add: Path, TF
+```
+
 ---
 
 ## 6. Script Python (offline)
@@ -153,6 +179,7 @@ python3 odometry_noise.py        # → odometry_noise.png
 
 - [compare_kinematics.py](scripts/compare_kinematics.py) — Mô phỏng 10s profile S-curve, so sánh quỹ đạo Ackermann vs differential drive.
 - [odometry_noise.py](scripts/odometry_noise.py) — Thêm nhiễu Gaussian (σ = 0.001, 0.01, 0.05) lên encoder vận tốc và góc lái, chạy 5 trials/mức để thấy độ trôi.
+- [run_s_curve.sh](scripts/run_s_curve.sh) — Gửi lệnh hình chữ S lớn lên `/cmd_ackermann` để demo Lab 4 trên ROS2 thực.
 
 ---
 
